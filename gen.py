@@ -72,7 +72,7 @@ def create_package_header(folder):
     out_w, out_h = 1414, 464
     game_w = out_w // 2
 
-    cross = make_outlined_cross(cross, out_h)
+    cross = make_outlined_cross(cross, out_h // 2)
     g1 = scale_and_crop(game1, game_w, out_h)
     g2 = scale_and_crop(game2, game_w, out_h)
 
@@ -80,7 +80,8 @@ def create_package_header(folder):
     result.paste(g1, (0, 0))
     result.paste(g2, (game_w, 0))
     cross_x = (out_w - cross.width) // 2
-    result.paste(cross, (cross_x, 0), cross)
+    cross_y = (out_h - cross.height) // 2
+    result.paste(cross, (cross_x, cross_y), cross)
     result.save(f"{folder}/package_header.png")
 
 
