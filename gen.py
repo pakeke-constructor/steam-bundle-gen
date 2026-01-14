@@ -8,11 +8,29 @@ def sanitize(name):
     return re.sub(r'[<>:"/\\|?*]', '', name).replace(' ', '_')
 
 
+def get_app_id(url):
+    return re.search(r'/app/(\d+)', url).group(1)
+
+
 def scrape_game_name(url):
     soup = BeautifulSoup(requests.get(url).text, 'html.parser')
     elem = soup.find('div', class_='apphub_AppName') or soup.find('title')
     assert elem
     return elem.text.strip().replace(' on Steam', '')
+
+
+def download_capsule(app_id, path):
+    urls = [
+        f"https://cdn.cloudflare.steamstatic.com/steam/apps/{app_id}/capsule_616x353.jpg",
+        f"https://shared.fastly.steamstatic.com/store_item_assets/steam/apps/{app_id}/header_2x.jpg",
+        f"https://shared.fastly.steamstatic.com/store_item_assets/steam/apps/{app_id}/header.jpg",
+    ]
+    for url in urls:
+        r = requests.get(url)
+        if r.status_code == 200:
+            with open(path, 'wb') as f:
+                f.write(r.content)
+            return
 
 
 def gen(url1, url2):
@@ -22,6 +40,10 @@ def gen(url1, url2):
     folder = f"{sanitize(game1)}_x_{sanitize(game2)}"
     os.makedirs(folder, exist_ok=True)
     print(f"Created: {folder}")
+
+    download_capsule(get_app_id(url1), f"{folder}/game1.png")
+    download_capsule(get_app_id(url2), f"{folder}/game2.png")
+    print("Downloaded capsules")
 
 
 

@@ -3,7 +3,11 @@
     "allow": [
       "WebSearch",
       "WebFetch(domain:store.steampowered.com)",
-      "WebFetch(domain:myopic.design)"
+      "WebFetch(domain:myopic.design)",
+      "Bash(python gen.py:*)",
+      "WebFetch(domain:shared.fastly.steamstatic.com)",
+      "WebFetch(domain:cdn.cloudflare.steamstatic.com)",
+      "WebFetch(domain:impress.games)"
     ]
   }
 }
