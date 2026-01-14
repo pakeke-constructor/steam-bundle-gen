@@ -45,7 +45,7 @@ def scale_and_crop(img, target_w, target_h):
 
 
 def make_outlined_cross(cross_img, size):
-    OUTLINE_WIDTH = 12
+    OUTLINE_WIDTH = min(12, size//10)
     cross = cross_img.resize((size, size), Image.LANCZOS)
 
     # Make black version
@@ -64,14 +64,12 @@ def make_outlined_cross(cross_img, size):
     return result
 
 
-def create_package_header(folder):
+def create_bundle_image(folder, out_w, out_h, name):
     game1 = Image.open(f"{folder}/game1.png")
     game2 = Image.open(f"{folder}/game2.png")
     cross = Image.open("cross.png").convert("RGBA")
 
-    out_w, out_h = 1414, 464
     game_w = out_w // 2
-
     cross = make_outlined_cross(cross, out_h // 2)
     g1 = scale_and_crop(game1, game_w, out_h)
     g2 = scale_and_crop(game2, game_w, out_h)
@@ -82,7 +80,7 @@ def create_package_header(folder):
     cross_x = (out_w - cross.width) // 2
     cross_y = (out_h - cross.height) // 2
     result.paste(cross, (cross_x, cross_y), cross)
-    result.save(f"{folder}/package_header.png")
+    result.save(f"{folder}/{name}.png")
 
 
 def gen(url1, url2):
@@ -97,8 +95,11 @@ def gen(url1, url2):
     download_capsule(get_app_id(url2), f"{folder}/game2.png")
     print("Downloaded capsules")
 
-    create_package_header(folder)
-    print("Created package_header.png")
+    create_bundle_image(folder, 1414, 464, "package_header")
+    create_bundle_image(folder, 920, 430, "header_capsule")
+    create_bundle_image(folder, 462, 174, "small_capsule")
+    create_bundle_image(folder, 1232, 706, "main_capsule")
+    print("Created bundle images")
 
 
 
