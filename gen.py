@@ -45,7 +45,7 @@ def scale_and_crop(img, target_w, target_h):
 
 
 def make_outlined_cross(cross_img, size):
-    OUTLINE_WIDTH = min(12, size//10)
+    OUTLINE_WIDTH = min(12, size//20)
     cross = cross_img.resize((size, size), Image.LANCZOS)
 
     # Make black version
