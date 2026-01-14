@@ -1,6 +1,7 @@
 # CLAUDE.md
 
-This file provides guidance to Claude Code (claude.ai/code) when working with code in this repository.
+As an agent, you should be extremely concise. Conciseness is more important than proper grammar.
+
 
 ## Project Overview
 
@@ -35,6 +36,14 @@ The `cross.png` asset is placed between the two game capsule images to create th
 python gen.py
 ```
 
-## Dependencies
 
-Likely needs: `requests`, `beautifulsoup4`, `Pillow` (PIL) for web scraping and image manipulation.
+# IMPORTANT AGENT DETAILS:
+<IMPORTANT-DETAILS>
+- You are working with a talented engineer who understands the codebase, if you need guidance or clarifications, ask.
+- In all interactions, be extremely concise, even if it means grammatical incorrectness.
+- When writing code, write the simplest code possible. Aggressively avoid complexity.
+- Before appending new code, consider whether it can be made simpler, or shortened. Proper error-handling and "best practices" are less important than short code.
+- If a feature is too complex/adds too much code, ask the engineer for help/guidance.
+</IMPORTANT-DETAILS>
+
+
