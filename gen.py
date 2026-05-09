@@ -23,17 +23,13 @@ def scrape_game_name(url):
 
 
 def download_capsule(app_id, path):
-    urls = [
-        f"https://cdn.cloudflare.steamstatic.com/steam/apps/{app_id}/capsule_616x353.jpg",
-        f"https://shared.fastly.steamstatic.com/store_item_assets/steam/apps/{app_id}/header_2x.jpg",
-        f"https://shared.fastly.steamstatic.com/store_item_assets/steam/apps/{app_id}/header.jpg",
-    ]
-    for url in urls:
-        r = requests.get(url)
-        if r.status_code == 200:
-            with open(path, 'wb') as f:
-                f.write(r.content)
-            return
+    soup = BeautifulSoup(requests.get(f"https://store.steampowered.com/app/{app_id}/").text, 'html.parser')
+    img = soup.find('img', src=re.compile(rf'apps/{app_id}/.*header'))
+    assert img, f"No capsule found for app {app_id}"
+    r = requests.get(img['src'])
+    assert r.status_code == 200
+    with open(path, 'wb') as f:
+        f.write(r.content)
 
 
 def scale_and_crop(img, target_w, target_h):
@@ -107,7 +103,7 @@ def gen(url1, url2):
 # So please leave this API as is; don't add `input()` or anything weird.
 gen(
     "https://store.steampowered.com/app/3057190/LOOTPLOT/",
-    "https://store.steampowered.com/app/1958340/Cube_Chaos/"
+    "https://store.steampowered.com/app/4173020/CAT_CAT_CAT_CAT_CAT_CAT_CAT_CAT_CAT_CAT_CAT/"
 )
 
 
