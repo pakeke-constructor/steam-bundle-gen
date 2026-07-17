@@ -102,8 +102,8 @@ def gen(url1, url2):
 # In future, other programs will call `generate`.
 # So please leave this API as is; don't add `input()` or anything weird.
 gen(
-    "https://store.steampowered.com/app/3057190/LOOTPLOT/",
-    "https://store.steampowered.com/app/4173020/CAT_CAT_CAT_CAT_CAT_CAT_CAT_CAT_CAT_CAT_CAT/"
+    "https://store.steampowered.com/app/4173020/CAT_CAT_CAT_CAT_CAT_CAT_CAT_CAT_CAT_CAT_CAT/",
+    "https://store.steampowered.com/app/4615010/Kibble_Cats/"
 )
 
 
