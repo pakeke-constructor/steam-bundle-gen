@@ -32,21 +32,22 @@ def download_capsule(app_id, path):
         f.write(r.content)
 
 
-def scale_and_crop(img, target_w, target_h):
-    ratio = target_h / img.height
-    new_w = int(img.width * ratio)
-    img = img.resize((new_w, target_h), Image.LANCZOS)
-    left = (new_w - target_w) // 2
-    return img.crop((left, 0, left + target_w, target_h))
+def scale_and_crop(img, target_w, target_h, zoom=1.0):
+    # zoom < 1 = zoomed out (letterboxed), zoom > 1 = zoomed in (cropped more)
+    ratio = max(target_h / img.height, target_w / img.width) * zoom
+    img = img.resize((max(1, int(img.width * ratio)), max(1, int(img.height * ratio))), Image.LANCZOS)
+    out = Image.new('RGB', (target_w, target_h))
+    out.paste(img, ((target_w - img.width) // 2, (target_h - img.height) // 2))
+    return out
 
 
-def create_bundle_image(folder, out_w, out_h, name):
+def create_bundle_image(folder, out_w, out_h, name, zoom_1=1.0, zoom_2=1.0):
     game1 = Image.open(f"{folder}/game1.png")
     game2 = Image.open(f"{folder}/game2.png")
 
     game_w = out_w // 2
-    g1 = scale_and_crop(game1, game_w, out_h)
-    g2 = scale_and_crop(game2, out_w - game_w, out_h)
+    g1 = scale_and_crop(game1, game_w, out_h, zoom_1)
+    g2 = scale_and_crop(game2, out_w - game_w, out_h, zoom_2)
 
     result = Image.new('RGB', (out_w, out_h))
     result.paste(g1, (0, 0))
@@ -54,7 +55,7 @@ def create_bundle_image(folder, out_w, out_h, name):
     result.save(f"{folder}/{name}.png")
 
 
-def gen(url1, url2):
+def gen(url1, url2, zoom_1=1.0, zoom_2=1.0):
     game1, game2 = scrape_game_name(url1), scrape_game_name(url2)
     print(f"Game 1: {game1}\nGame 2: {game2}")
 
@@ -66,10 +67,10 @@ def gen(url1, url2):
     download_capsule(get_app_id(url2), f"{folder}/game2.png")
     print("Downloaded capsules")
 
-    create_bundle_image(folder, 1414, 464, "package_header")
-    create_bundle_image(folder, 920, 430, "header_capsule")
-    create_bundle_image(folder, 462, 174, "small_capsule")
-    create_bundle_image(folder, 1232, 706, "main_capsule")
+    create_bundle_image(folder, 1414, 464, "package_header", zoom_1, zoom_2)
+    create_bundle_image(folder, 920, 430, "header_capsule", zoom_1, zoom_2)
+    create_bundle_image(folder, 462, 174, "small_capsule", zoom_1, zoom_2)
+    create_bundle_image(folder, 1232, 706, "main_capsule", zoom_1, zoom_2)
     print("Created bundle images")
 
 
@@ -83,7 +84,9 @@ CATX11 = "https://store.steampowered.com/app/4173020/CAT_CAT_CAT_CAT_CAT_CAT_CAT
 # So please leave this API as is; don't add `input()` or anything weird.
 gen(
     LOOTPLOT,
-    "https://store.steampowered.com/app/3282420/Zoominoes/"
+    "https://store.steampowered.com/app/3282420/Zoominoes/",
+    zoom_1=0.8,
+    zoom_2=0.8
 )
 
 
