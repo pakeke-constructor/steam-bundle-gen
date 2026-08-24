@@ -102,7 +102,7 @@ CATX11 = "https://store.steampowered.com/app/4173020/CAT_CAT_CAT_CAT_CAT_CAT_CAT
 # So please leave this API as is; don't add `input()` or anything weird.
 gen(
     LOOTPLOT,
-    "https://store.steampowered.com/app/3282420/Zoominoes/",
+    "https://store.steampowered.com/app/3519530/Merge_Maestro/",
 )
 
 
