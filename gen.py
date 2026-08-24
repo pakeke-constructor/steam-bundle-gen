@@ -57,10 +57,29 @@ def pick(folder, n, tall):
     return p if tall and os.path.exists(p) else f"{folder}/game{n}.png"
 
 
-def create_bundle_image(folder, out_w, out_h, name, zoom_1=1.0, zoom_2=1.0, tall=False):
+def make_outlined_cross(cross_img, size):
+    OUTLINE_WIDTH = min(12, size//20)
+    cross = cross_img.resize((size, size), Image.LANCZOS)
+
+    # Make black version
+    r, g, b, a = cross.split()
+    black = Image.merge('RGBA', (a.point(lambda x: 0), a.point(lambda x: 0), a.point(lambda x: 0), a))
+
+    # Canvas with padding for offsets
+    result = Image.new('RGBA', (size, size), (0, 0, 0, 0))
+
+    # 8 directions for outline
+    for dx, dy in [(-1, -1), (0, -1), (1, -1), (-1, 0), (1, 0), (-1, 1), (0, 1), (1, 1)]:
+        result.paste(black, (dx * OUTLINE_WIDTH, dy * OUTLINE_WIDTH), black)
+
+    # White cross on top
+    result.paste(cross, (0, 0), cross)
+    return result
+
+
+def create_bundle_image(folder, out_w, out_h, name, zoom_1=1.0, zoom_2=1.0, tall=False, cross=True):
     game1 = Image.open(pick(folder, 1, tall))
     game2 = Image.open(pick(folder, 2, tall))
-
     game_w = out_w // 2
     g1 = scale_and_crop(game1, game_w, out_h, zoom_1, tall)
     g2 = scale_and_crop(game2, out_w - game_w, out_h, zoom_2, tall)
@@ -68,10 +87,13 @@ def create_bundle_image(folder, out_w, out_h, name, zoom_1=1.0, zoom_2=1.0, tall
     result = Image.new('RGB', (out_w, out_h))
     result.paste(g1, (0, 0))
     result.paste(g2, (game_w, 0))
+    if cross:
+        c = make_outlined_cross(Image.open(CROSS).convert("RGBA"), out_h // 2)
+        result.paste(c, ((out_w - c.width) // 2, (out_h - c.height) // 2), c)
     result.save(f"{folder}/{name}.png")
 
 
-def gen(url1, url2, zoom_1=1.0, zoom_2=1.0):
+def gen(url1, url2, zoom_1=1.0, zoom_2=1.0, cross=True):
     game1, game2 = scrape_game_name(url1), scrape_game_name(url2)
     print(f"Game 1: {game1}\nGame 2: {game2}")
 
@@ -85,14 +107,16 @@ def gen(url1, url2, zoom_1=1.0, zoom_2=1.0):
     download_tall(get_app_id(url2), f"{folder}/game2_tall.png")
     print("Downloaded capsules")
 
-    create_bundle_image(folder, 1414, 464, "package_header", zoom_1, zoom_2)
-    create_bundle_image(folder, 920, 430, "header_capsule", zoom_1, zoom_2, tall=True)
-    create_bundle_image(folder, 462, 174, "small_capsule", zoom_1, zoom_2)
-    create_bundle_image(folder, 1232, 706, "main_capsule", zoom_1, zoom_2, tall=True)
+    create_bundle_image(folder, 1414, 464, "package_header", zoom_1, zoom_2, cross=cross)
+    create_bundle_image(folder, 920, 430, "header_capsule", zoom_1, zoom_2, tall=True, cross=cross)
+    create_bundle_image(folder, 462, 174, "small_capsule", zoom_1, zoom_2, cross=cross)
+    create_bundle_image(folder, 1232, 706, "main_capsule", zoom_1, zoom_2, tall=True, cross=cross)
     print("Created bundle images")
 
 
 
+
+CROSS = "cross.png"
 
 LOOTPLOT = "https://store.steampowered.com/app/3057190/LOOTPLOT/"
 CATX11 = "https://store.steampowered.com/app/4173020/CAT_CAT_CAT_CAT_CAT_CAT_CAT_CAT_CAT_CAT_CAT/",
